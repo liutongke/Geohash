@@ -1,8 +1,8 @@
 <?php
 /*
  * User: keke
- * Date: 2018/3/16
- * Time: 10:43
+ * Date: 2018/3/19
+ * Time: 23:50
  *——————————————————佛祖保佑 ——————————————————
  *                   _ooOoo_
  *                  o8888888o
@@ -25,7 +25,7 @@
  *——————————————————代码永无BUG —————————————————
  */
 
-namespace HuaweiPush\src;
+namespace huawei\push;
 
 use Illuminate\Support\Facades\Redis;
 
@@ -50,21 +50,21 @@ class Http
      */
 
     //申请应用时获得的应用密钥
-    public $client_secret;
+    public $client_secret = 'af83ca1a1567be56036e636e59635a61';
 
     //申请应用时获得的应用ID
-    public $client_id;
+    public $client_id = '100228903';
 
     //请求地址
     private $get_curl = 'https://login.cloud.huawei.com/oauth2/v2/token';
 
-    public function __construct($client_secret, $client_id, $get_curl)
+    public function __construct($client_secret = null, $client_id = null, $get_curl = null)
     {
-//        if ($client_secret) $this->client_secret = $client_secret;
-//        if ($client_id) $this->client_id = $client_id;
+        if ($client_secret) $this->client_secret = $client_secret;
+        if ($client_id) $this->client_id = $client_id;
 
-        $this->client_secret = Config::get('huawei_push.client_secret');
-        $this->client_id = Config::get('huawei_push.client_id');
+//        $this->client_secret = constant("HUAWEI_PUSH_CLIENT_SECRET");
+//        $this->client_id = constant("HUAWEI_PUSH_CLIENT_ID");
         $this->get_curl = $get_curl;
     }
 
@@ -73,6 +73,7 @@ class Http
         $result = $this->PushCurl();
         if ($result) {
             $res_arr = json_decode($result, true);
+//            return $res_arr;
             if (isset($res_arr['error'])) {
                 // 如果返回了error则证明失败
                 $error_code = $res_arr['error'];      // 错误码
@@ -103,6 +104,7 @@ class Http
                         break;
                 }
             } else {
+//                echo $res_arr['access_token'];
                 //token写入redis中
                 Redis::set('huawei_push_token', $res_arr['access_token']);
                 Redis::expire('huawei_push_token', $res_arr['expires_in']);
@@ -122,7 +124,7 @@ class Http
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => $this->get_curl,
+            CURLOPT_URL => "https://login.cloud.huawei.com/oauth2/v2/token",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -133,7 +135,8 @@ class Http
             CURLOPT_HTTPHEADER => array(
                 "cache-control: no-cache",
                 "content-type: application/x-www-form-urlencoded",
-                "host: Login.cloud.huawei.com"
+                "host: Login.cloud.huawei.com",
+                "postman-token: c39bdf23-f905-9284-a87a-81f56ecdca5a"
             ),
         ));
 
@@ -143,7 +146,7 @@ class Http
         curl_close($curl);
 
         if ($err) {
-            echo "cURL Error #:" . $err;
+            return "cURL Error #:" . $err;
         } else {
             return $response;
         }

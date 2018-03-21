@@ -1,8 +1,8 @@
 <?php
 /*
  * User: keke
- * Date: 2018/3/16
- * Time: 11:03
+ * Date: 2018/3/20
+ * Time: 9:38
  *——————————————————佛祖保佑 ——————————————————
  *                   _ooOoo_
  *                  o8888888o
@@ -25,27 +25,17 @@
  *——————————————————代码永无BUG —————————————————
  */
 
-
-namespace HuaweiPush\src;
+namespace huawei\push;
 
 use Illuminate\Support\Facades\Redis;
 
-/*
- * http请求类
- * User: keke
- * Date: 2018/3/14
- * Time: 21:57
- */
-
-class HuaPush
+class Push
 {
     //获取token
     public function GetHuaweiToken()
     {
         //引入文件
-//        require_once '/usr/local/nginx/app/html/libs/Huapush/Http.php';
-
-        $ht = new \Http(config('config.HUAWEI_PUSH_CLIENT_SECRET'), config('config.HUAWEI_PUSH_CLIENT_ID'));
+        $ht = new Http(config('config.HUAWEI_PUSH_CLIENT_SECRET'), config('config.HUAWEI_PUSH_CLIENT_ID'));
         return $ht->GetToken();
     }
 
