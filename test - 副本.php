@@ -1,24 +1,9 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
-//require_once __DIR__ . '/Jpush.php';
+//require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/Jpush.php';
 use huawei\push\Client;
 use huawei\push\Http;
-use huawei\push\Push;
 
-$push = new Push();
-$res = $push->setMsg(1, [
-    'content' => 'push content',
-    'title' => 'push title'
-])
-    ->setAction(2, 'www.baidu.com')
-    ->setExt('Trump', [
-        'season' => 'Spring',
-        'weather' => 'raining'
-    ])
-//    ->setExt('Trump')
-    ->send_huawei_push('3456');
-var_dump($res);
-die;
 //$client = new Client();
 //echo $client::world();
 

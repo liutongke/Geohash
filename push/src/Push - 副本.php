@@ -41,86 +41,12 @@ class Push
         return $ht->GetToken();
     }
 
-    //
-    public function setMsg($type, $body)
-    {
-//        取值含义和说明：
-//
-//        1 透传异步消息
-//
-//        3 系统通知栏异步消息
-        $this->data['hps']['msg'] = [
-            'type' => (int)$type,
-            'body' => $body
-        ];
-
-        return $this;
-    }
-
-    public function setAction($type, $param)
-    {
-//        1 自定义行为：行为由参数intent定义
-//
-//        2 打开URL：URL地址由参数url定义
-//
-//        3 打开APP：默认值，打开App的首页
-//
-//        注意：富媒体消息开放API不支持
-
-        if ($type == '1') {
-            $this->data['hps']['action'] = [
-                'type' => (int)$type,
-                'param' => [
-                    'intent' => $param
-                ]
-            ];
-        } elseif ($type == '2') {
-            $this->data['hps']['action'] = [
-                'type' => (int)$type,
-                'param' => [
-                    'url' => $param
-                ]
-            ];
-        } else {
-            $this->data['hps']['action'] = [
-                'type' => (int)$type,
-                'param' => [
-                    'appPkgName' => $param
-                ]
-            ];
-        }
-
-        return $this;
-    }
-
-    //设置扩展信息
-    public function setExt($Trump, $ext)
-    {
-        if (empty($ext)) {
-            $this->data['hps']['ext'] = [
-                'biTag' => $Trump
-            ];
-        } else {
-            $this->data['hps']['ext'] = [
-                'biTag' => $Trump,
-                'customize' => [$ext]
-            ];
-        }
-
-        return $this;
-    }
-
     //进行推送请求
     public function send_huawei_push($device_token)
     {
-//        echo '<pre />';
-//        var_dump($this->data);
-//        echo '<pre />';
-//        die;
         $device_token_list = json_encode([
             $device_token
         ]);
-
 //        $payload = json_encode([
 //            'hps' => [
 //                'msg' => [
@@ -137,20 +63,17 @@ class Push
 //                ]
 //            ]
 //        ]);
-//        $payload = '{"hps":{"msg":{"type":3,"body":{"content":"123"}}}}';
+        $payload = '{"hps":{"msg":{"type":3,"body":{"content":"123"}}}}';
 //        dd($payload);
         //token值
-//        $huawei_token = Redis::get('huawei_push_token');
-        $huawei_token = 'CFrCeOg23DEcWf94Un9yJFBdLqJo8e+gnAl9iOlsfg9tvH4cWUZglbPiIvpmzfjliLDOueyBQAC0nb7aX+g6XA==';
-        $payload = json_encode($this->data);
-        echo $payload;
-        echo '<br />';
+        $huawei_token = Redis::get('huawei_push_token');
+
         //token需要urlencode编码
         if ($huawei_token) {
-            self::huawei_curl(urlencode($huawei_token), $device_token_list, $payload);
+            $this->huawei_curl(urlencode($huawei_token), $device_token_list, $payload);
         } else {
 //            $huawei_token = $this->GetHuaweiToken();
-            self::huawei_curl(urlencode($this->GetHuaweiToken()), $device_token_list, $payload);
+            $this->huawei_curl(urlencode($this->GetHuaweiToken()), $device_token_list, $payload);
         }
     }
 
@@ -162,12 +85,9 @@ class Push
 //        appId：用户在联盟申请的APPID;
         $nsp_ctx = json_encode([
             'ver' => '1',
-//            'appId' => config('config.HUAWEI_PUSH_CLIENT_ID')
-            'appId' => '100228903'
+            'appId' => config('config.HUAWEI_PUSH_CLIENT_ID')
         ]);
-//        echo 'https://api.push.hicloud.com/pushsend.do?nsp_ctx=' . urlencode($nsp_ctx);
-//        echo '<br />';
-//        echo 'access_token=' . $token . '&nsp_svc=openpush.message.api.send&nsp_ts=' . time() . '&device_token_list=' . $device_token_list . '&payload=' . $payload;
+
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -186,14 +106,9 @@ class Push
         ));
 
         $response = curl_exec($curl);
-        $err = curl_error($curl);
+        curl_error($curl);
 
         curl_close($curl);
-
-        if ($err) {
-            echo "cURL Error #:" . $err;
-        } else {
-            echo $response;
-        }
+        echo $response;
     }
 }
