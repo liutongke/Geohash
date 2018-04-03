@@ -4,6 +4,29 @@ require_once __DIR__ . '/vendor/autoload.php';
 use huawei\push\Client;
 use huawei\push\Http;
 use huawei\push\Push;
+use huawei\push\Jpush;
+
+$app_key = 'aed8819fcc431a8909f8b0e8';
+$master_secret = '82d9b8d8c756b3737af2cb7c';
+$jpush = new Jpush($app_key, $master_secret);
+
+$haha = $jpush->setPlatform('android')
+    //设置别名
+    ->addAlias('325')
+    //推送的消息体,安卓调用androidNotification，iOS调用iosNotification
+    ->androidNotification(
+        [
+            //这里指定了，则会覆盖上级统一指定的 alert 信息；内容可以为空字符串，则表示不展示到通知栏。
+            "alert" => '山有木兮木有枝',
+            //这里自定义 JSON 格式的 Key/Value 信息，以供业务使用
+            'extras' => [
+                'content' => '心悦君兮君不知',
+                "badge" => (int)1,
+            ]
+        ])
+    ->send();
+var_dump($haha);
+die;
 
 $push = new Push();
 $res = $push->setMsg(1, [
@@ -16,7 +39,7 @@ $res = $push->setMsg(1, [
         'weather' => 'raining'
     ])
 //    ->setExt('Trump')
-    ->send_huawei_push('3456');
+    ->send_huawei_push('351539070400694');
 var_dump($res);
 die;
 //$client = new Client();

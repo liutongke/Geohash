@@ -31,6 +31,11 @@ use Illuminate\Support\Facades\Redis;
 
 class Push
 {
+    /*
+     * device_token_list判断是否是数组还是字符串更加傻瓜化
+     * 对于华为服务器的返回值
+     */
+
     private $data = [];
 
     //获取token
@@ -113,44 +118,27 @@ class Push
     //进行推送请求
     public function send_huawei_push($device_token)
     {
-//        echo '<pre />';
-//        var_dump($this->data);
-//        echo '<pre />';
-//        die;
-        $device_token_list = json_encode([
-            $device_token
-        ]);
+        //检查是否是数组
+        if (is_array($device_token)) {
+            $device_token_list = json_encode($device_token);
+        } else {
+            $device_token_list = json_encode([
+                $device_token
+            ]);
+        }
 
-//        $payload = json_encode([
-//            'hps' => [
-//                'msg' => [
-//                    'type' => (int)1,
-//                    'body' => [
-//                        'content' => '123',
-//                        'title' => '456'
-//                    ],
-//                ],
-//                'action' => [
-//                    'type' => (int)1,
-//                    'param' =>
-//                        'intent":"#Intent;compo=com.rvr/.Activity;S.W=U;end'
-//                ]
-//            ]
-//        ]);
-//        $payload = '{"hps":{"msg":{"type":3,"body":{"content":"123"}}}}';
-//        dd($payload);
         //token值
 //        $huawei_token = Redis::get('huawei_push_token');
-        $huawei_token = 'CFrCeOg23DEcWf94Un9yJFBdLqJo8e+gnAl9iOlsfg9tvH4cWUZglbPiIvpmzfjliLDOueyBQAC0nb7aX+g6XA==';
-        $payload = json_encode($this->data);
-        echo $payload;
-        echo '<br />';
+//        \需要去除
+        $huawei_token = 'CFrC7eMGeKzMLOaoTMbqz3AyieUG7N/tzQLdmhvqCzpDMe/xKbew88oRWNrQW0phMRlJFfWlYWRISMQ12zC9qQ==';
+//        $payload = json_encode($this->data);
+
         //token需要urlencode编码
         if ($huawei_token) {
-            self::huawei_curl(urlencode($huawei_token), $device_token_list, $payload);
+            return self::huawei_curl(urlencode($huawei_token), $device_token_list, json_encode($this->data));
         } else {
 //            $huawei_token = $this->GetHuaweiToken();
-            self::huawei_curl(urlencode($this->GetHuaweiToken()), $device_token_list, $payload);
+            return self::huawei_curl(urlencode($this->GetHuaweiToken()), $device_token_list, json_encode($this->data));
         }
     }
 
@@ -165,9 +153,7 @@ class Push
 //            'appId' => config('config.HUAWEI_PUSH_CLIENT_ID')
             'appId' => '100228903'
         ]);
-//        echo 'https://api.push.hicloud.com/pushsend.do?nsp_ctx=' . urlencode($nsp_ctx);
-//        echo '<br />';
-//        echo 'access_token=' . $token . '&nsp_svc=openpush.message.api.send&nsp_ts=' . time() . '&device_token_list=' . $device_token_list . '&payload=' . $payload;
+
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -191,9 +177,130 @@ class Push
         curl_close($curl);
 
         if ($err) {
-            echo "cURL Error #:" . $err;
+//            echo "cURL Error #:" . $err;
+            return self::errorHandling($err);
         } else {
-            echo $response;
+//            echo $response;
+            return self::errorHandling($response);
         }
+    }
+
+    //错误的处理
+    public function errorHandling($msg)
+    {
+        $msg = json_decode($msg, true);
+
+        if (isset($msg['code'])) {
+            switch ((int)$msg['code']) {
+                case 80000000:
+                    $message = [
+                        'status_code' => '200',
+                        'msg' => "发送成功！"
+                    ];
+
+                    break;
+                case 80000003:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "终端不在线！"
+                    ];
+
+                    break;
+                case 80000004:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "应用已卸载！"
+                    ];
+
+                    break;
+                case 80000005:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "响应超时！"
+                    ];
+
+                    break;
+                case 80000006:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "无路由，终端未连接过push！"
+                    ];
+
+                    break;
+                case 80000007:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "终端在其他大区，不在中国大陆使用push！"
+                    ];
+
+                    break;
+                case 80000008:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "路由不正确，可能终端切换push服务器！"
+                    ];
+
+                    break;
+                case 80100000:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "参数检查，部分参数错误，正确token已下发！"
+                    ];
+
+                    break;
+                case 80100002:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "不合法的token列表！"
+                    ];
+
+                    break;
+
+                case 80100003:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "不合法的payload！"
+                    ];
+
+                    break;
+
+                case 80100004:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "不合法的超时时间！"
+                    ];
+
+                    break;
+                case 80300002:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "无权限下发消息给参数中的token列表！"
+                    ];
+
+                    break;
+                case 81000001:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => "内部错误！"
+                    ];
+
+                    break;
+                default:
+                    $message = [
+                        'status_code' => $msg['code'],
+                        'msg' => $msg['msg']
+                    ];
+
+                    break;
+            }
+        } else {
+            //接口调用失败或无响应
+            $message = [
+                'status_code' => $msg['code'],
+                'msg' => '接口调用失败或无响应'
+            ];
+        }
+
+        return $message;
     }
 }
