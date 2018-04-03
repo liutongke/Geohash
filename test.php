@@ -24,3 +24,26 @@ $haha = $jpush->setPlatform('android')
         ])
     ->send();
 var_dump($haha);
+
+$jpush->setPlatform('all')
+    ->addAllAudience()
+    ->allNotification([
+        //这里指定了，则会覆盖上级统一指定的 alert 信息；内容可以为空字符串，则表示不展示到通知栏。
+        "alert" => '病起萧萧两鬓华',
+        //这里自定义 JSON 格式的 Key/Value 信息，以供业务使用
+        'android' => [
+            'extras' => [
+                'content' => '卧看残月上窗纱',
+                "badge" => (int)1,
+            ]
+        ],
+        'ios' => [
+            "badge" => (int)2,
+//                    如果无此字段，则此消息无声音提示；有此字段，如果找到了指定的声音就播放该声音，否则播放默认声音,如果此字段为空字符串，iOS 7 为默认声音，iOS 8及以上系统为无声音。(消息) 说明：JPush 官方 API Library (SDK) 会默认填充声音字段。提供另外的方法关闭声音。
+            "sound" => "",
+            'extras' => [
+                'content' => '豆蔻连梢煎熟水',
+            ]
+        ],
+    ])
+    ->send();
