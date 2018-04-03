@@ -1,9 +1,11 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
+
 use mobile\push\Jpush;
 
 $app_key = '***';
 $master_secret = '***';
+
 $jpush = new Jpush($app_key, $master_secret);
 
 $haha = $jpush->setPlatform('android')
