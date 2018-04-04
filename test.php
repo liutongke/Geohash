@@ -2,7 +2,13 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use mobile\push\Jpush;
+use mobile\push\Push;
 
+//获取华为token
+$hpush = new Hpush('***', '***');
+$token = $hpush->GetHuaweiToken();
+var_dump($token);
+die;
 $app_key = '***';
 $master_secret = '***';
 //来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候
