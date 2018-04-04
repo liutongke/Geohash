@@ -5,7 +5,7 @@ use mobile\push\Jpush;
 
 $app_key = '***';
 $master_secret = '***';
-
+//来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候
 $jpush = new Jpush($app_key, $master_secret);
 $haha = $jpush->setPlatform('android')
     //设置别名
