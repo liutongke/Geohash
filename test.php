@@ -3,49 +3,62 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use mobile\push\Jpush;
 use mobile\push\Push;
+use mobile\push\Jreport;
 
 //获取华为token
-$hpush = new Hpush('***', '***');
-$token = $hpush->GetHuaweiToken();
-var_dump($token);
-die;
+//$hpush = new Hpush('***', '***');
+//$token = $hpush->GetHuaweiToken();
+//var_dump($token);
+//die;
 $app_key = '***';
 $master_secret = '***';
+
+
+$jreport = new Jreport($app_key, $master_secret);
+$haha = $jreport->receivedUrl()
+    ->received([
+        '1654967444'
+    ])
+    ->send();
+var_dump($haha);
+die;
 //来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候
 //biubiubiu
 $jpush = new Jpush($app_key, $master_secret);
+
 $haha = $jpush->setPlatform('android')
     //设置别名
-    ->addAlias('325')
+    ->addAlias('324')
+    //推送的消息体,安卓调用androidNotification，iOS调用iosNotification
+    ->androidNotification(
+        [
+            //这里指定了，则会覆盖上级统一指定的 alert 信息；内容可以为空字符串，则表示不展示到通知栏。
+            "alert" => '常记溪亭日暮',
+            //这里自定义 JSON 格式的 Key/Value 信息，以供业务使用
+            'extras' => [
+                'content' => '沉醉不知归路',
+                "badge" => (int)1,
+            ]
+        ])
+    ->send();
+var_dump($haha);
+die;
+
+$haha = $jpush->setPlatform('android')
+    //设置别名
+    ->addAlias('324')
 //{"msg_content":"点赞动态","extras":{
 //    "content":"阿哲0点赞了你的动态。"},"content_type":"text","title":"点赞动态!"}
     //推送的消息体,安卓调用androidNotification，iOS调用iosNotification
     ->Message(
         [
             //这里指定了，则会覆盖上级统一指定的 alert 信息；内容可以为空字符串，则表示不展示到通知栏。
-            "msg_content" => '山有木兮木有枝',
+            "msg_content" => '常记溪亭日暮',
             //这里自定义 JSON 格式的 Key/Value 信息，以供业务使用
             "content_type" => 'text',
             "title" => '测试',
             'extras' => [
-                'content' => '心悦君兮君不知',
-                "badge" => (int)1,
-            ]
-        ])
-    ->send();
-var_dump($haha);
-
-$haha = $jpush->setPlatform('android')
-    //设置别名
-    ->addAlias('325')
-    //推送的消息体,安卓调用androidNotification，iOS调用iosNotification
-    ->androidNotification(
-        [
-            //这里指定了，则会覆盖上级统一指定的 alert 信息；内容可以为空字符串，则表示不展示到通知栏。
-            "alert" => '山有木兮木有枝',
-            //这里自定义 JSON 格式的 Key/Value 信息，以供业务使用
-            'extras' => [
-                'content' => '心悦君兮君不知',
+                'content' => '沉醉不知归路',
                 "badge" => (int)1,
             ]
         ])
