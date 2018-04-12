@@ -10,9 +10,8 @@ use mobile\push\Jreport;
 //$token = $hpush->GetHuaweiToken();
 //var_dump($token);
 //die;
-$app_key = '***';
-$master_secret = '***';
-
+//$app_key = '***';
+//$master_secret = '***';
 
 $jreport = new Jreport($app_key, $master_secret);
 $haha = $jreport->receivedUrl()
@@ -22,8 +21,7 @@ $haha = $jreport->receivedUrl()
     ->send();
 var_dump($haha);
 die;
-//来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候来自github的问候
-//biubiubiu
+
 $jpush = new Jpush($app_key, $master_secret);
 
 $haha = $jpush->setPlatform('android')
