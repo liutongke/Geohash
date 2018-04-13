@@ -7,9 +7,12 @@ use mobile\push\Jreport;
 use mobile\push\Hpush;
 use mobile\push\Http;
 
-$hpush = new Http('af83ca1a1567be56036e636e59635a61', '100228903');
-$res = $hpush->GetToken();
-var_dump($res);
+$hpush = new Hpush('***', '***');
+//PUSH消息类型
+$res = $hpush->setMsg('1', [
+    'test' => 'test'
+])
+    ->send('目标设备Token');
 die;
 //获取华为token
 //$hpush = new Hpush('***', '***');
