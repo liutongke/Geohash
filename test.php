@@ -4,7 +4,13 @@ require_once __DIR__ . '/vendor/autoload.php';
 use mobile\push\Jpush;
 use mobile\push\Push;
 use mobile\push\Jreport;
+use mobile\push\Hpush;
+use mobile\push\Http;
 
+$hpush = new Http('af83ca1a1567be56036e636e59635a61', '100228903');
+$res = $hpush->GetToken();
+var_dump($res);
+die;
 //获取华为token
 //$hpush = new Hpush('***', '***');
 //$token = $hpush->GetHuaweiToken();
@@ -12,6 +18,8 @@ use mobile\push\Jreport;
 //die;
 //$app_key = '***';
 //$master_secret = '***';
+$app_key = 'aed8819fcc431a8909f8b0e8';
+$master_secret = '82d9b8d8c756b3737af2cb7c';
 
 $jreport = new Jreport($app_key, $master_secret);
 $haha = $jreport->receivedUrl()
