@@ -7,7 +7,10 @@ use mobile\push\Jreport;
 use mobile\push\Hpush;
 use mobile\push\Http;
 
-$hpush = new Hpush('***', '***');
+$hpush = new Hpush('7f3cf56e5b22d73e69737a1abd18d9b7', '100352371');
+$token = $hpush->getToken();
+var_dump($token);
+die;
 //PUSH消息类型
 $res = $hpush->setMsg('1', [
     'test' => 'test'
